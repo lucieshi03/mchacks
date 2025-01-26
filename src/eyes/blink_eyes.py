@@ -11,7 +11,7 @@ drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
 blink_counter = 0
 last_blink_time = None
-BLINK_TIMEOUT = 4  # seconds
+BLINK_TIMEOUT = 3  # seconds
 timeout_printed = False
 
 

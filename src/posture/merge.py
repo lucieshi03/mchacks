@@ -8,7 +8,8 @@ import mediapipe as mp
 
 good_counter = 0
 bad_counter = 0
-blink_counter = 0
+blink_good_counter = 0
+blink_bad_counter = 0
 last_blink_time = None
 BLINK_TIMEOUT = 3  # seconds
 timeout_printed = False
@@ -44,13 +45,14 @@ def detect_wink(face_landmarks, left_eye_indices, right_eye_indices):
     right_ear = eye_aspect_ratio(right_eye_indices)
 
     if left_ear < EAR_THRESHOLD and right_ear < EAR_THRESHOLD:
-        global blink_counter, last_blink_time, timeout_printed
+        global blink_good_counter, last_blink_time, timeout_printed, blink_bad_counter
         current_time = time.time()
         if last_blink_time is None or (current_time - last_blink_time) <= BLINK_TIMEOUT:
-            blink_counter += 1
+            blink_good_counter += 1
             last_blink_time = current_time
             timeout_printed = False
             return True
+        blink_bad_counter+=1
     return False
 
 def check_blink_timeout():
@@ -101,7 +103,9 @@ with mp_face_mesh.FaceMesh(
             counters_data = {
                 "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
                 "good_counter": good_counter,
-                "bad_counter": bad_counter
+                "bad_counter": bad_counter, 
+                "blink_good_counter": blink_good_counter,
+
             }
             with open("counters.json", "a") as json_file:
                 json.dump(counters_data, json_file)
