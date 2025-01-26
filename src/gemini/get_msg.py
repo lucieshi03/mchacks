@@ -32,3 +32,5 @@ def get_message(caught_slouching=10, caught_not_blinking=10):
     response = model.generate_content(prompt)
 
     return (response.text)
+
+get_message()

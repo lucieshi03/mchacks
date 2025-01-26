@@ -2,4 +2,4 @@ env
 __pycache__
 bad_postures
 good_postures
-
+.env
