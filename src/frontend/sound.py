@@ -5,5 +5,3 @@ def ping():
     winsound.Beep(frequency, duration)
     winsound.Beep(frequency, duration)
     winsound.Beep(frequency, duration)
-
-ping()
