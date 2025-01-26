@@ -4,4 +4,7 @@ from tkinter import messagebox
 
 
 def show_info(msg):
-    messagebox.showwarning("HEYYY",msg)
+    messagebox.showwarning("HEY YOU",msg)
+
+
+show_info("yuh")

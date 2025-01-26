@@ -1,12 +1,8 @@
 import sound
 import popup
-#testing
 
-# Sounds
-#if screen2close == 
-#    sound.ping()
-badPosture = True
 blinkNow = True
+badPosture = False
 
 if badPosture == True:
     msg = "sit up straight betch"
