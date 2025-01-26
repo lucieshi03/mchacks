@@ -58,7 +58,7 @@ def check_blink_timeout():
     if last_blink_time is not None and (current_time - last_blink_time) > BLINK_TIMEOUT:
         if not timeout_printed:
             blink_bad_counter+=1
-            print(False)
+            print("Blink No detected")
             timeout_printed = True
         last_blink_time = current_time  
         return False
