@@ -2,6 +2,7 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 from pathlib import Path
+import json
 
 # Dynamically resolve the path to the .env file in the parent folder
 env_path = Path(__file__).resolve().parent.parent / ".env"
@@ -13,6 +14,17 @@ load_dotenv(dotenv_path=env_path)
 API_KEY = os.getenv('GOOGLE_API_KEY')
 
 genai.configure(api_key=API_KEY, transport="rest") 
+
+# Define the path to the JSON file
+file_path = Path(__file__).resolve().parent.parent.parent / 'counters.json'
+
+# Read and parse the JSON file
+with open(file_path, 'r') as file:
+    data = json.load(file)
+
+# Accessing values (example for a dictionary structure)
+var_name2= data.get('bad_counter')
+var_name1= data.get('blink_bad_counter')
 
 def get_message(caught_slouching=10, caught_not_blinking=10):
 
