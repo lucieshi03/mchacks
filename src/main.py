@@ -5,8 +5,8 @@ import json
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 import mediapipe as mp
-from frontend.tester import bad_blinks
-from frontend.tester import bad_postures
+from tester import bad_blinks
+from tester import bad_postures
 
 good_counter = 0
 bad_counter = 0
