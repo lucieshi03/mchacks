@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import time
+import json
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -9,7 +10,8 @@ mp_face_mesh = mp.solutions.face_mesh
 IMAGE_FILES = []
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
-blink_counter = 0
+blink_good_counter = 0
+blink_bad_counter = 0
 last_blink_time = None
 BLINK_TIMEOUT = 3  # seconds
 timeout_printed = False
@@ -31,13 +33,14 @@ def detect_wink(face_landmarks, left_eye_indices, right_eye_indices):
     right_ear = eye_aspect_ratio(right_eye_indices)
 
     if left_ear < EAR_THRESHOLD and right_ear < EAR_THRESHOLD:
-        global blink_counter, last_blink_time, timeout_printed
+        global blink_good_counter, last_blink_time, timeout_printed, blink_bad_counter
         current_time = time.time()
         if last_blink_time is None or (current_time - last_blink_time) <= BLINK_TIMEOUT:
-            blink_counter += 1
+            blink_good_counter += 1
             last_blink_time = current_time
             timeout_printed = False
             return True
+        blink_bad_counter+=1
     return False
 
 def check_blink_timeout():
@@ -59,7 +62,23 @@ with mp_face_mesh.FaceMesh(
   for idx, file in enumerate(IMAGE_FILES):
     image = cv2.imread(file)
 
+
     results = face_mesh.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    current_times = time.time()
+
+    if current_times - last_blink_time >= BLINK_TIMEOUT:
+        blink_data = {
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "blink_bad_counter": blink_bad_counter
+        }
+        with open("blink_bad_counter.json", "w") as json_file:
+            json.dump(blink_data, json_file)
+            json_file.write("\n")
+        print(f"Blink bad counter recorded at {blink_data['timestamp']} - Blink Bad Counter: {blink_bad_counter}")
+
+        blink_bad_counter = 0
+        last_blink_time = current_times
+
 
     if not results.multi_face_landmarks:
       continue
