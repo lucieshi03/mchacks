@@ -8,7 +8,7 @@ import mediapipe as mp
 
 good_counter = 0
 bad_counter = 0
-blink_counter = 0
+blink_bad_counter = 0
 last_blink_time = None
 BLINK_TIMEOUT = 3  # seconds
 timeout_printed = False
@@ -44,20 +44,20 @@ def detect_wink(face_landmarks, left_eye_indices, right_eye_indices):
     right_ear = eye_aspect_ratio(right_eye_indices)
 
     if left_ear < EAR_THRESHOLD and right_ear < EAR_THRESHOLD:
-        global blink_counter, last_blink_time, timeout_printed
+        global last_blink_time, timeout_printed
         current_time = time.time()
         if last_blink_time is None or (current_time - last_blink_time) <= BLINK_TIMEOUT:
-            blink_counter += 1
             last_blink_time = current_time
             timeout_printed = False
             return True
     return False
 
 def check_blink_timeout():
-    global last_blink_time, timeout_printed
+    global last_blink_time, timeout_printed, blink_bad_counter
     current_time = time.time()
     if last_blink_time is not None and (current_time - last_blink_time) > BLINK_TIMEOUT:
         if not timeout_printed:
+            blink_bad_counter+=1
             print(False)
             timeout_printed = True
         last_blink_time = current_time  
@@ -101,15 +101,17 @@ with mp_face_mesh.FaceMesh(
             counters_data = {
                 "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
                 "good_counter": good_counter,
-                "bad_counter": bad_counter
+                "bad_counter": bad_counter,
+                "blink_bad_counter": blink_bad_counter
             }
             with open("counters.json", "a") as json_file:
                 json.dump(counters_data, json_file)
                 json_file.write("\n")
-            print(f"Counters reset at {counters_data['timestamp']} - Good: {good_counter}, Bad: {bad_counter}")
+            print(f"Counters reset at {counters_data['timestamp']} - good_posture: {good_counter}, bad_posture: {bad_counter}, blink_bad_counter: {blink_bad_counter}")
 
             good_counter = 0
             bad_counter = 0
+            blink_bad_counter = 0
             last_reset_time = current_time
 
         # Perform wink detection
@@ -152,7 +154,8 @@ with mp_face_mesh.FaceMesh(
 
     counters_data = {
         "good_counter": good_counter,
-        "bad_counter": bad_counter
+        "bad_counter": bad_counter,
+        "blink_bad_counter": blink_bad_counter
     }
     with open("counters.json", "w") as json_file:
         json.dump(counters_data, json_file)
