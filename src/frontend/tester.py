@@ -1,12 +1,13 @@
 import sound
 import popup
+from eyes.blink_eyes import check_blink_timeout
 #testing
 
 # Sounds
 #if screen2close == 
 #    sound.ping()
 badPosture = True
-blinkNow = True
+blinkNow = check_blink_timeout() #call a function in blink_eyes to check if the user blinked
 
 if badPosture == True:
     msg = "sit up straight betch"

@@ -14,8 +14,6 @@ last_blink_time = None
 BLINK_TIMEOUT = 4  # seconds
 timeout_printed = False
 
-def get_false():
-    return False
 
 def detect_wink(face_landmarks, left_eye_indices, right_eye_indices):
     def eye_aspect_ratio(eye_indices):
@@ -40,7 +38,7 @@ def detect_wink(face_landmarks, left_eye_indices, right_eye_indices):
             last_blink_time = current_time
             timeout_printed = False
             return True
-    return get_false()
+    return False
 
 def check_blink_timeout():
     global last_blink_time, timeout_printed
