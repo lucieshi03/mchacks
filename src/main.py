@@ -5,12 +5,14 @@ import json
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 import mediapipe as mp
+from frontend.tester import bad_blinks
+from frontend.tester import bad_postures
 
 good_counter = 0
 bad_counter = 0
 blink_bad_counter = 0
 last_blink_time = None
-BLINK_TIMEOUT = 3  # seconds
+BLINK_TIMEOUT = 4  # seconds
 timeout_printed = False
 
 model = load_model("posture_model.h5")
@@ -21,7 +23,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_mesh = mp.solutions.face_mesh
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
-
+cap = cv2.VideoCapture(0)
 def preprocess_image(image):
     image_resized = cv2.resize(image, (64, 64))
     image_normalized = image_resized / 255.0
@@ -59,12 +61,13 @@ def check_blink_timeout():
         if not timeout_printed:
             blink_bad_counter+=1
             print("Blink No detected")
+            bad_blinks()
             timeout_printed = True
         last_blink_time = current_time  
         return False
     return True
 
-cap = cv2.VideoCapture(0)
+
 
 with mp_face_mesh.FaceMesh(
     max_num_faces=1,
@@ -91,6 +94,7 @@ with mp_face_mesh.FaceMesh(
             if predicted_label:  # "Bad" posture
                 bad_counter += 1
                 print("Bad Posture! Sit up!")
+                bad_postures()
             else:
                 good_counter += 1
 
