@@ -1,10 +1,16 @@
 import pyttsx3
+from pyttsx3 import *
 
 def speaker(msg):
     engine = pyttsx3.init()
+
+    rate = engine.getProperty('rate')   
+    print (rate)                        
+    engine.setProperty('rate', 225)
+
     engine.say(msg)
     engine.runAndWait()
 
 
-msg="Samosas are out here waging a personal war against my taste buds! Who decided they need to be this spicy? It's like biting into molten lava wrapped in dough. I wanted a snack, not a challenge to my existence. Why can't we enjoy the beautiful crunch and savory filling without setting our mouths on fire? Is it too much to ask for balance? Samosas, calm down with the spice—it’s supposed to be a treat, not a daredevil stunt for my tongue!"
+msg="Honey, your posture screams 'I haven't seen a spine doctor since the Jurassic period,' and your blink rate suggests you're less human and more... taxidermied owl.  Ten slumps? Twenty missed blinks?  Sounds like your desk isn't the only thing that's stiff. You're practically a human statue, a monument to bad habits.  Maybe if you moved around a bit, you wouldn't look like you're already fossilizing.  Get a life, and a chiropractor!"
 speaker(msg)
