@@ -23,7 +23,7 @@ def preprocess_images(data_dir, img_size=(64, 64)):
                 img = img / 255.0  # Normalize the image
                 
                 images.append(img)
-                labels.append(0 if label == "bad" else 1)  # Label 0 for "bad", 1 for "good"
+                labels.append(True if label == "bad" else False)  # Label 0 for "bad", 1 for "good"
     
     images = np.array(images)
     labels = np.array(labels)
@@ -33,6 +33,9 @@ def preprocess_images(data_dir, img_size=(64, 64)):
 # Prepare the data
 data_dir = "."  # Current directory
 images, labels = preprocess_images(data_dir)
+
+# Convert labels to integers for compatibility with TensorFlow
+labels = labels.astype(int)
 
 # Split the data into training and testing sets
 from sklearn.model_selection import train_test_split
