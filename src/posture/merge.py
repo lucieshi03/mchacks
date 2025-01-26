@@ -6,15 +6,13 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 import mediapipe as mp
 
-# Initialize variables for counters
 good_counter = 0
 bad_counter = 0
 blink_counter = 0
 last_blink_time = None
-BLINK_TIMEOUT = 4  # seconds
+BLINK_TIMEOUT = 3  # seconds
 timeout_printed = False
 
-# Load the trained posture model
 model = load_model("posture_model.h5")
 labels = {True: "Bad", False: "Good"}
 
@@ -24,15 +22,13 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_mesh = mp.solutions.face_mesh
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
-# Function to preprocess the image for posture prediction
 def preprocess_image(image):
     image_resized = cv2.resize(image, (64, 64))
     image_normalized = image_resized / 255.0
     image_array = img_to_array(image_normalized)
-    image_array = np.expand_dims(image_array, axis=0)  # Add batch dimension
+    image_array = np.expand_dims(image_array, axis=0)  # Add batch dimension???????????????????
     return image_array
 
-# Blink/wink detection function
 def detect_wink(face_landmarks, left_eye_indices, right_eye_indices):
     def eye_aspect_ratio(eye_indices):
         vertical1 = ((face_landmarks[eye_indices[1]].x - face_landmarks[eye_indices[5]].x) ** 2 +
@@ -57,7 +53,6 @@ def detect_wink(face_landmarks, left_eye_indices, right_eye_indices):
             return True
     return False
 
-# Check for blink timeout
 def check_blink_timeout():
     global last_blink_time, timeout_printed
     current_time = time.time()
@@ -69,10 +64,8 @@ def check_blink_timeout():
         return False
     return True
 
-# Initialize webcam
 cap = cv2.VideoCapture(0)
 
-# Define face mesh model
 with mp_face_mesh.FaceMesh(
     max_num_faces=1,
     refine_landmarks=True,
@@ -81,7 +74,7 @@ with mp_face_mesh.FaceMesh(
   
     last_prediction_time = time.time()
     last_reset_time = time.time()
-    predicted_label = None  # Initialize the predicted_label variable
+    predicted_label = None  
 
     while cap.isOpened():
         success, frame = cap.read()
@@ -90,7 +83,6 @@ with mp_face_mesh.FaceMesh(
 
         current_time = time.time()
 
-        # Perform posture prediction every second
         if current_time - last_prediction_time >= 1:
             processed_frame = preprocess_image(frame)
             prediction = model.predict(processed_frame)
@@ -111,7 +103,7 @@ with mp_face_mesh.FaceMesh(
                 "good_counter": good_counter,
                 "bad_counter": bad_counter
             }
-            with open("posture_counters.json", "a") as json_file:
+            with open("counters.json", "a") as json_file:
                 json.dump(counters_data, json_file)
                 json_file.write("\n")
             print(f"Counters reset at {counters_data['timestamp']} - Good: {good_counter}, Bad: {bad_counter}")
@@ -129,7 +121,6 @@ with mp_face_mesh.FaceMesh(
                 left_eye_indices = [33, 159, 145, 133, 153, 144]
                 right_eye_indices = [362, 386, 374, 263, 380, 373]
 
-                # Detect blink
                 blink_detected = detect_wink(face_landmarks.landmark, left_eye_indices, right_eye_indices)
                 if blink_detected:
                     print("Wink Detected!")
@@ -159,12 +150,11 @@ with mp_face_mesh.FaceMesh(
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-    # Save the final counters data
     counters_data = {
         "good_counter": good_counter,
         "bad_counter": bad_counter
     }
-    with open("posture_counters.json", "w") as json_file:
+    with open("counters.json", "w") as json_file:
         json.dump(counters_data, json_file)
 
 cap.release()

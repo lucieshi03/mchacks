@@ -14,7 +14,7 @@ def preprocess_images(data_dir, img_size=(64, 64)):
     labels = []
     
     for label in ["good", "bad"]:
-        folder_path = os.path.join(data_dir, f"{label}_postures")
+        folder_path = os.path.join(data_dir, f"{label}_postures") # data_dir = current directory
         for filename in os.listdir(folder_path):
             if filename.endswith(".jpg"):
                 # Read image
